@@ -20,7 +20,7 @@ g.ran <- asreml(fixed = yield ~ rep,
 n.g   <- as.numeric(g.ran$noeff["gen"]) # number of genotypes
 vc.g  <- summary(g.ran)$varcomp['gen','component'] # genetic variance component
 G.g   <- diag(1,n.g)*vc.g               # note that this is manually created for simple diag structre
-C22.g <- as.matrix(predict(g.ran, classify="gen", only="gen", vcov=TRUE)$vcov)
+C22.g <- predict(g.ran, classify="gen", only="gen", vcov=TRUE)$vcov
 M     <- diag(n.g)-(solve(G.g)%*%C22.g) # [see p. 813 bottom left in Oakey (2006)]
 eM    <- eigen(M)                       # obtain eigenvalues
 
@@ -33,6 +33,6 @@ H2Oakey # 0.8091336
 
 library(psych) # to compute trace of a matrix
 # approximate method [see p. 813 top right in Oakey (2006)]
-H2Oakey.approx <- 1 - psych::tr(solve(G.g)%*%C22.g / n.g ) 
+H2Oakey.approx <- 1 - sum(diag(solve(G.g)%*%C22.g / n.g))
 H2Oakey.approx # 0.7754197
 
