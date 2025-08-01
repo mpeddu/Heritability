@@ -22,11 +22,11 @@ g.fix <- asreml(fixed = yield ~ gen + rep,
 # Handle model estimates #
 ##########################
 # Genetic variance component
-vc.g <- summary(g.ran)$varcomp['gen!gen.var','component']
+vc.g <- summary(g.ran)$varcomp['gen','component']
 vc.g #0.142902
 
 # Mean variance of a difference of two genotypic BLUEs
-vdBLUE.mat <- predict(g.fix, classify="gen", sed=TRUE)$pred$sed^2 # obtain squared s.e.d. matrix 
+vdBLUE.mat <- predict(g.fix, classify="gen", sed=TRUE)$sed^2 # obtain squared s.e.d. matrix 
 vdBLUE.avg <- mean(vdBLUE.mat[upper.tri(vdBLUE.mat, diag=FALSE)]) # take mean of upper triangle
 vdBLUE.avg #0.07010875
 
