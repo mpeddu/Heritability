@@ -15,7 +15,7 @@ g.ran <- asreml(fixed = yield ~       rep,
                 data=dat)
 
 # BLUPs for genotype main effect
-g.pred  <- predict(g.ran, classify="gen", only="gen", sed=T, vcov=T)$pred
+g.pred  <- predict(g.ran, classify="gen", only="gen", sed=T, vcov=T)
 BLUPs.g <- data.table(g.pred$pvals[,c(1,2)]); names(BLUPs.g) <- c("gen","BLUP")
 
 # Genotype as fixed effect
@@ -24,7 +24,7 @@ g.fix <- asreml(fixed  = yield ~ gen + rep,
                 data=dat)
 
 # Least Squares Mean for genotype main effect
-g.lsm <- predict(g.fix, classify="gen", sed=T)$pred
+g.lsm <- predict(g.fix, classify="gen", sed=T)
 LSM.g <- data.table(g.lsm$pvals[,c(1,2)]); names(LSM.g) <- c("gen", "LSmean")
 
 ##########################
@@ -36,13 +36,13 @@ list.g <- levels(dat$gen) # list of genotype names
 n.g    <- length(list.g)  # number of genotypes
 
 # G.g (i.e. estimated G matrix of genotype main effect)
-vc.g <- summary(g.ran)$varcomp['gen!gen.var','component'] # VC genotype main effect
+vc.g <- summary(g.ran)$varcomp['gen','component'] # VC genotype main effect
 G.g.wide <- diag(1, n.g) * vc.g; dimnames(G.g.wide) <- list(list.g, list.g) # G.g matrix
 G.g.long <- data.table(reshape::melt(G.g.wide)); names(G.g.long) <- c("gen1","gen2","sigma") # G.g matrix in long format
 
 # Variance of a difference between genotype lsmeans (based on C11 matrix)
 vd.lsm.wide <- g.lsm$sed^2; dimnames(vd.lsm.wide) <- list(list.g, list.g)
-vd.lsm.long <- data.table(reshape::melt(vd.lsm.wide)); names(vd.lsm.long) <- c("gen1","gen2","vd")
+vd.lsm.long <- data.table(reshape::melt(as.matrix(vd.lsm.wide))); names(vd.lsm.long) <- c("gen1","gen2","vd")
 
 # merge BLUPs, G.g and C22.g information into "H2D.blue" table
 g.var <- G.g.long[gen1==gen2, .(gen1, sigma)]; names(g.var) <- c("gen","var") # variances G.g
